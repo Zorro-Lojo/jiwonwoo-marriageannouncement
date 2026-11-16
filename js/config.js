@@ -125,6 +125,8 @@ window.CONFIG = {
     snowGap: 56,
     snowDuration: [40, 117],
     reveal: true,
-    pageSnap: true
+    pageSnap: true,
+    // 모바일 화면 넘김 감도: speed(px/ms) 이상 빠르게, distance(px) 이상 밀어야 넘어감. 숫자가 클수록 둔감
+    swipe: { speed: 0.5, distance: 40 }
   }
 };
