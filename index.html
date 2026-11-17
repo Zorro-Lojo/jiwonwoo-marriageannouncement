@@ -94,9 +94,14 @@
       <div class="eng-title" id="gbEng"></div>
       <div class="ko-title" id="gbKo"></div>
       <p class="lead" id="gbLead"></p>
-      <div class="gb-list" id="gbList"></div>
       <button class="btn" id="btnWrite" type="button"><span>방명록 작성하기</span></button>
-      <br>
+      <!-- 공개 방명록: 좌우 슬라이드 (PC 는 화살표 버튼) -->
+      <div class="gb-slider">
+        <button class="gb-nav prev" id="gbPrev" type="button" aria-label="이전 방명록">‹</button>
+        <div class="gb-track" id="gbList"></div>
+        <button class="gb-nav next" id="gbNext" type="button" aria-label="다음 방명록">›</button>
+      </div>
+      <div class="gb-count" id="gbCount" aria-live="polite"></div>
       <button class="share" id="btnShare" type="button">사이트 링크 복사하기</button>
     </div>
     <div class="foot" id="foot"></div>
@@ -128,6 +133,15 @@
       <button type="submit" class="primary">보내기</button>
     </div>
   </form>
+</div>
+
+<!-- 방명록 전체 보기 모달 (더보기) -->
+<div class="modal" id="modalGbRead" role="dialog" aria-modal="true" aria-labelledby="gbReadName">
+  <div class="sheet gb-read">
+    <div class="who"><span id="gbReadName"></span><time id="gbReadDate"></time></div>
+    <div class="msg" id="gbReadMsg"></div>
+    <button class="close-only" data-close type="button">닫기</button>
+  </div>
 </div>
 
 <!-- 방명록 전송 확인 모달 -->
@@ -166,5 +180,6 @@
 <script src="js/bgm.js"></script>
 <script src="js/easteregg.js"></script>
 <script src="js/guestbook.js"></script>
-<script src="js/main.js"></script></body>
+<script src="js/main.js"></script>
+<script src="js/swipe.js"></script></body>
 </html>
