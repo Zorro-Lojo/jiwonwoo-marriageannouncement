@@ -223,14 +223,71 @@ html.intro .reveal.on { opacity: 0; transform: translateY(24px); }
 
 /* ===== 6. 방명록 ===== */
 .guestbook { padding: 70px 0 60px; }
-html.snap .card > section.guestbook { padding-bottom: 90px; }
+/* 한 화면에 제목·인사·작성 버튼·슬라이드·링크 복사가 다 들어가도록 여백을 줄임 */
+html.snap .card > section.guestbook { padding-top: 40px; padding-bottom: 64px; }
 .guestbook .foot { position: absolute; left: 0; right: 0; bottom: 0; }
-.guestbook .lead { margin: 34px 0 35px; color: var(--text); }
-.gb-list { margin: 0 36px 28px; text-align: left; }
-.gb-item { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
-.gb-item .who { font-size: 13px; color: var(--point); display: flex; justify-content: space-between; }
-.gb-item .who time { color: var(--mute); font-size: 11px; }
-.gb-item .msg { color: var(--text); white-space: pre-wrap; word-break: break-word; }
+.guestbook .lead { margin: 22px 36px 24px; line-height: 22px; color: var(--text); }
+
+/* 공개 글 슬라이드: 가운데 카드 + 양옆 카드가 살짝 보임 */
+.gb-slider { position: relative; margin-top: 22px; }
+.gb-track {
+  position: relative;
+  display: flex; align-items: stretch; gap: 10px;
+  padding: 0 36px;
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  text-align: left;
+}
+.gb-track::-webkit-scrollbar { display: none; }
+.gb-item {
+  flex: 0 0 100%;
+  display: flex; flex-direction: column;
+  scroll-snap-align: center;
+  background: #fff; border: 1px solid var(--line); border-radius: 12px;
+  padding: 12px 16px;
+}
+.gb-item .who { font-size: 13px; line-height: 20px; color: var(--point); display: flex; justify-content: space-between; gap: 8px; }
+.gb-item .who time { color: var(--mute); font-size: 11px; flex-shrink: 0; }
+.gb-item .msg {
+  margin-top: 4px;
+  color: var(--text); line-height: 22px; white-space: pre-wrap; word-break: break-word;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3;
+  overflow: hidden;
+}
+.gb-item .more {
+  display: none; align-self: flex-end; margin-top: auto; padding: 4px 0 0;
+  background: none; border: 0;
+  font-size: 12px; line-height: 18px; color: var(--point);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.gb-item.long { cursor: pointer; }
+.gb-item.long .more { display: block; }
+.gb-empty { flex: 0 0 100%; text-align: center; font-size: 13px; color: var(--mute); padding: 18px 0; }
+.gb-count { min-height: 18px; margin-top: 6px; font-family: var(--font-eng); font-size: 12px; line-height: 18px; letter-spacing: 1px; color: var(--mute); }
+/* 화살표: 마우스가 있는 PC 에서만 (모바일은 손가락으로 밀기) */
+.gb-nav {
+  display: none;
+  position: absolute; top: 50%; z-index: 1; transform: translateY(-50%);
+  width: 28px; height: 28px; border-radius: 50%;
+  align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, .85); border: 1px solid var(--line);
+  color: var(--point); font-size: 18px; line-height: 1; padding: 0 0 2px;
+}
+.gb-nav.prev { left: 4px; }
+.gb-nav.next { right: 4px; }
+.gb-nav:disabled { opacity: 0; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) { .gb-nav { display: flex; } }
+
+/* 더보기 모달: 긴 글은 모달 안에서만 스크롤 */
+.gb-read { text-align: left; }
+.gb-read .who { font-size: 14px; color: var(--point); display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.gb-read .who time { color: var(--mute); font-size: 12px; flex-shrink: 0; }
+.gb-read .msg {
+  max-height: 55vh; max-height: 55svh; overflow-y: auto; overscroll-behavior: contain;
+  color: var(--text); white-space: pre-wrap; word-break: break-word;
+}
 /* 공개/비공개 */
 .gb-vis { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .gb-vis label { flex: 1; position: relative; cursor: pointer; }
@@ -241,7 +298,7 @@ html.snap .card > section.guestbook { padding-bottom: 90px; }
 .gb-vis-help { font-size: 12px; line-height: 18px; color: var(--mute); margin: 6px 0 4px; }
 .sheet .confirm-msg { font-size: 14px; line-height: 22px; color: var(--text); margin: 4px 0 18px; }
 .share {
-  display: inline-block; margin-top: 16px;
+  display: inline-block; margin-top: 8px;
   background: none; border: 0;
   font-size: 13px; letter-spacing: -0.5px; color: var(--ink);
   text-decoration: underline; text-underline-offset: 3px;
@@ -253,6 +310,14 @@ html.snap .card > section.guestbook { padding-bottom: 90px; }
   touch-action: manipulation; /* 연타 시 확대 방지 */
   -webkit-tap-highlight-color: transparent;
   user-select: none; -webkit-user-select: none;
+  display: flex; align-items: center; justify-content: center;
+}
+/* 터치 위치 힌트: 흰 눈꽃. 아는 사람만 알아보게 그림자·움직임 없이 밝은 배경에 거의 묻히게 */
+.egg-flake { display: block; line-height: 0; pointer-events: none; }
+.egg-flake img {
+  display: block;
+  filter: brightness(0) invert(1);
+  opacity: .85;
 }
 /* 페이드인: display 대신 opacity/visibility 로 열고 닫음 */
 .modal.egg {
@@ -312,5 +377,4 @@ html.snap .card > section.guestbook { padding-bottom: 90px; }
 @media (prefers-reduced-motion: reduce) {
   .snow { display: none; }
   .intro-dot::before, .intro-dot::after { animation: none; transform: scale(2.4); opacity: .4; }
-  .reveal { opacity: 1; transform: none; transition: none; }
-}
+  .reveal { opacity: 1; transform: none; transition: none; }}

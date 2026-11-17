@@ -236,21 +236,76 @@
     setLines($('gbLead'), g.lead);
     setLines($('cfMsg'), g.confirmText);
 
+    /* 공개 글 목록: 좌우 슬라이드 (가로 scroll-snap). 3줄 넘는 글은 잘라서 "더보기" → 전체 글 모달 */
     const list = $('gbList');
+    const cards = () => list.querySelectorAll('.gb-item');
+
+    const openRead = it => {
+      $('gbReadName').textContent = it.name;
+      $('gbReadDate').textContent = it.date;
+      $('gbReadMsg').textContent = it.msg;
+      openModal('modalGbRead');
+      $('gbReadMsg').scrollTop = 0;
+    };
+
+    // 실제로 3줄을 넘쳐서 잘린 카드에만 더보기 표시 (폭·폰트에 따라 달라서 그려진 뒤 측정)
+    const checkClamp = () => cards().forEach(box => {
+      const msg = box.querySelector('.msg');
+      box.classList.toggle('long', msg.scrollHeight > msg.clientHeight + 1);
+    });
+
+    // 가운데에 와 있는 카드 번호
+    const currentCard = () => {
+      const center = list.scrollLeft + list.clientWidth / 2;
+      let best = 0, bestDist = Infinity;
+      cards().forEach((c, i) => {
+        const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - center);
+        if (d < bestDist) { bestDist = d; best = i; }
+      });
+      return best;
+    };
+    const updateNav = () => {
+      const n = cards().length, i = currentCard();
+      $('gbCount').textContent = n > 1 ? (i + 1) + ' / ' + n : '';
+      $('gbPrev').disabled = n < 2 || i === 0;
+      $('gbNext').disabled = n < 2 || i === n - 1;
+    };
+    const goTo = i => {
+      const c = cards()[i];
+      if (c) list.scrollTo({ left: c.offsetLeft - (list.clientWidth - c.offsetWidth) / 2, behavior: 'smooth' });
+    };
+    let navRaf = 0;
+    list.addEventListener('scroll', () => {
+      cancelAnimationFrame(navRaf); navRaf = requestAnimationFrame(updateNav);
+    }, { passive: true });
+    $('gbPrev').addEventListener('click', () => goTo(currentCard() - 1));
+    $('gbNext').addEventListener('click', () => goTo(currentCard() + 1));
+
     const load = async () => {
       let items;
       try { items = await store.listPublic(); } catch (e) { return; }
       list.textContent = '';
+      if (!items.length) list.appendChild(el('p', 'gb-empty', g.emptyText));
       items.forEach(it => {
         const box = el('div', 'gb-item');
         const who = el('div', 'who');
         who.append(el('span', null, it.name), el('time', null, it.date));
-        box.append(who, el('div', 'msg', it.msg));
+        const more = el('button', 'more', g.moreText); more.type = 'button';
+        box.append(who, el('div', 'msg', it.msg), more);
+        // 잘린 카드는 카드 아무 곳이나 눌러도 전체 글 열기
+        box.addEventListener('click', () => { if (box.classList.contains('long')) openRead(it); });
         list.appendChild(box);
       });
+      list.scrollLeft = 0;
+      checkClamp(); updateNav();
       buildSnow();
     };
     load();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(checkClamp);
+    let clampTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(clampTimer); clampTimer = setTimeout(() => { checkClamp(); updateNav(); }, 200);
+    });
 
     const form = $('gbForm');
     const yes = $('cfYes');

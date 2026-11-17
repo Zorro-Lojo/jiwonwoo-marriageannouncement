@@ -81,7 +81,8 @@ window.CONFIG = {
     engTitle: 'Guestbook',
     koTitle: '방명록',
     lead: '간단한 축하글을 남겨주시면\n전부 소중히 읽고 간직해두겠습니다.\n\n축하해 주시는 한 분 한 분의 마음을\n기쁨과 감사로 기억하겠습니다.\n\n언제나 곁을 지켜 주신 양가 부모님과\n응원해 주시는 모든 분들께 감사드립니다.',
-    showCount: 5,
+    moreText: '더보기',                          // 3줄 넘는 글에 붙는 버튼 (누르면 전체 글 모달)
+    emptyText: '첫 번째 축하 메시지를 남겨주세요.', // 공개 글이 하나도 없을 때
     privateHelp: '저희에게만 비밀스럽게 전달됩니다.',
     publicHelp: '사이트에 이름과 메시지가 표시됩니다.',
     confirmText: '한 번 보내면 삭제하거나 수정할 수 없습니다.\n이대로 보낼까요?',
@@ -106,6 +107,8 @@ window.CONFIG = {
   /* ---------- 이스터에그 (방명록 화면 왼쪽 위 연타) ---------- */
   easterEgg: {
     taps: 20,             // 몇 번 눌러야 뜨는지
+    icon: 'images/snowflake_01.svg', // 터치 위치 힌트 (흰색으로 표시)
+    iconSize: 11,         // 힌트 크기 (px)
     resetMs: 1500,        // 이 시간(ms) 이상 쉬면 횟수 초기화
     url: 'https://jiwonwoo-secretinvitation.vercel.app/',
     text: '붉은 색 초대장 봉투가 날아왔습니다!\n열어볼까요?\n돌이킬 수 없을지도 모릅니다.',

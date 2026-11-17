@@ -4,7 +4,6 @@
   const sb = g.supabase || {};
   const useServer = !!(sb.url && sb.key);
   const TABLE = sb.table || 'guestbook';
-  const LIMIT = g.showCount || 5;
 
   const fmtDate = iso => {
     const d = new Date(iso);
@@ -16,7 +15,7 @@
   const headers = { apikey: sb.key, 'Content-Type': 'application/json' };
 
   async function serverList() {
-    const q = '?select=name,message,created_at&is_public=eq.true&order=created_at.desc&limit=' + LIMIT;
+    const q = '?select=name,message,created_at&is_public=eq.true&order=created_at.desc';
     const res = await fetch(endpoint + q, { headers, cache: 'no-store' });
     if (!res.ok) throw new Error('list ' + res.status);
     return (await res.json()).map(r => ({ name: r.name, msg: r.message, date: fmtDate(r.created_at) }));
@@ -36,7 +35,7 @@
     try { return JSON.parse(localStorage.getItem(g.storageKey) || '[]'); } catch (e) { return []; }
   }
   async function localList() {
-    return localAll().filter(it => it.isPublic).slice(0, LIMIT)
+    return localAll().filter(it => it.isPublic)
       .map(it => ({ name: it.name, msg: it.msg, date: fmtDate(it.date) }));
   }
   async function localAdd(name, msg, isPublic) {
